@@ -5,7 +5,7 @@ const { videoSchema } = require('../models/videoschema');
 
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    comment: {type: [videoSchema], default:[] }
+    comments: {type: [videoSchema] }
 
 });
 

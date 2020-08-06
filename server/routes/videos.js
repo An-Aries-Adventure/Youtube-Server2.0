@@ -86,7 +86,7 @@ router.delete('/:id', async (req, res) => {
 
 //adding new comment
 
-router.post('/:userId/comments/:videoId', async (req, res) => {
+router.post('/add', async (req, res) => {
     try {
 
     const user = await User.findById(req.params.userId);
@@ -106,12 +106,12 @@ catch (ex) {
 });
 
 
-router.put('/:userId/comments/:videoId', async (req, res) => {
+router.put('/:id', async (req, res) => {
     try {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error);
     
-    const user = await User.findById(req.params.userId);
+    const user = await Video.findById(req.params.videoID);
     if (!user) return res.status(400).send(`The user with id "${req.params.userId}" does not exist.`);
     
     const video = user.comments.id(req.params.videoId);
