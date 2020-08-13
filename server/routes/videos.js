@@ -86,36 +86,48 @@ router.delete('/:id', async (req, res) => {
 
 //adding new comment
 
-router.post('/add', async (req, res) => {
+//localhost:5000/api/videos/jH4yuUi/comments
+
+router.post('/:videoId/comments', async (req, res) => {
     try {
+        const videos = await Video.find({videoId: req.params.videoId});
+        let video = videos[0];
 
-    const user = await User.findById(req.params.userId);
-    if (!user) return res.status(400).send(`The user with id "${req.params.userId}" does not exist.`);
+        const comment = new Comment({
+            text: req.body.text,
+            replies: []
+        });
 
-    const video = await Video.findById(req.params.videoId);
-    if (!video) return res.status(400).send(`The video with id "${req.params.videoId}" does not exist.`);
+        if (!video){
+        video = new Video({
+            videoId: req.params.videoId,
+            likes: 0,
+            dislikes: 0,
+            comments: [comment]
+        }); 
+        }else{
+            video.comments.push(comment);
+        }
 
-    user.comments.push(video);
-
-    await user.save();
-    return res.send(user.comments);
-} 
-catch (ex) {
-    return res.status(500).send(`Internal Server Error: ${ex}`);
+        await video.save();
+        return res.send(comment);
+    } 
+    catch (ex) {
+        return res.status(500).send(`Internal Server Error: ${ex}`);
     }
 });
 
 
-router.put('/:id', async (req, res) => {
+router.put('/:videoId/comments/:commentId', async (req, res) => {
     try {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error);
     
-    const user = await Video.findById(req.params.videoID);
+    const videos = await Video.findById(req.params.videoID);
     if (!user) return res.status(400).send(`The user with id "${req.params.userId}" does not exist.`);
     
-    const video = user.comments.id(req.params.videoId);
-    if (!video) return res.status(400).send(`The video with id "${req.params.videoId}" does not exist.`);
+    const comment = video.comments.id(req.params.commentId);
+    if (!comment) return res.status(400).send(`The video with id "${req.params.videoId}" does not exist.`);
     
     video.videoId = req.body.videoId;
     video.likes = req.body.likes;
