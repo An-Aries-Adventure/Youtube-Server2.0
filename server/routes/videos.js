@@ -14,12 +14,14 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.get('/:id', async (req, res) => {
+router.get('/:videoId', async (req, res) => {
     try {
    
-    const video = await Video.findById(req.params.id);
+    const videos = await Video.find({videoId: req.params.videoId});
+    const video = videos[0];
+    console.log(video);
     if (!video)
-    return res.status(400).send(`The video with id "${req.params.id}" does not exist.`);
+    return res.status(400).send(`The video with id "${req.params.videoId}" does not exist.`);
     return res.send(video);
     } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
@@ -118,32 +120,52 @@ router.post('/:videoId/comments', async (req, res) => {
 });
 
 
-router.put('/:videoId/comments/:commentId', async (req, res) => {
+// router.put('/:videoId/comments/:commentId', async (req, res) => {
+//     try {
+//     const { error } = validate(req.body);
+//     if (error) return res.status(400).send(error);
+    
+//     comments = await Video.find({commentId: req.params.videoId.comments.commentId});
+//     let commentToUpdate = comments[0]
+    
+//     comment = video.comments.id(req.params.commentId);
+//     if (!comment) return res.status(400).send(`The video with id "${req.params.commentId}" does not exist.`);
+    
+//     video.videoId = req.body.videoId;
+//     video.likes = req.body.likes;
+//     video.dislikes = req.body.dislikes;
+//     video.comments = [];
+    
+//     await comment.save();
+//     return res.send(comment);
+    
+//     } 
+//     catch (ex) {
+//     return res.status(500).send(`Internal Server Error: ${ex}`);
+//     }
+// });
+
+
+router.delete('/:videoId/comments/:commentId', async (req, res) => {
+    
     try {
-    const { error } = validate(req.body);
-    if (error) return res.status(400).send(error);
-    
-    const videos = await Video.findById(req.params.videoID);
-    if (!user) return res.status(400).send(`The user with id "${req.params.userId}" does not exist.`);
-    
-    const comment = video.comments.id(req.params.commentId);
-    if (!comment) return res.status(400).send(`The video with id "${req.params.videoId}" does not exist.`);
-    
-    video.videoId = req.body.videoId;
-    video.likes = req.body.likes;
-    video.dislikes = req.body.dislikes;
-    video.comments = [];
-    
-    await user.save();
-    return res.send(video);
-    
-    } catch (ex) {
-    return res.status(500).send(`Internal Server Error: ${ex}`);
-    }
-});
+   
+        const video = await Video.findByIdAndRemove(req.params.id);
+        if (!video)
+        return res.status(400).send(`The video with id "${req.params.id}" does not exist.`);
+        return res.send(video);
+        } catch (ex) {
+        return res.status(500).send(`Internal Server Error: ${ex}`);
+        }
 
-
-router.delete('/:userId/comments/:videoId', async (req, res) => {
+    
+    
+    
+    
+    
+    
+    
+    
     try {
    
     const user = await User.findById(req.params.userId);
